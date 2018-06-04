@@ -1,12 +1,14 @@
 package View;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 
 import Operation.IOperation;
 import Operation.Operation;
@@ -24,6 +26,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JTable;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -57,7 +60,6 @@ public class MainView extends JFrame {
 		});
 	}
 	public void cerrar(){
-		JOptionPane.showMessageDialog(null, "Se estan guardando los datos");
 		op.saveData();
 		System.exit(1);
 	}
@@ -72,7 +74,7 @@ public class MainView extends JFrame {
 			}
 		});
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 457, 272);
+		setBounds(100, 100, 475, 272);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -172,32 +174,80 @@ public class MainView extends JFrame {
 					String word=textField_1.getText().split("[^\\w+'*|’]+")[0].toLowerCase();
 					System.out.println("La palabra a buscar es: "+word);
 					ArrayList<String> results=op.search(word);
-					for(String s:results){
-						JOptionPane.showMessageDialog(null, s);
+					if(results.size()==0) {
+						//Removemos las respuestas de la búsqueda anterior						
+						DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+						dtm.setRowCount(0);
+						table.setModel(dtm);
+						JOptionPane.showMessageDialog(null, "No se ha encontrado la palabra");						
+					}else {
+						//Removemos las respuestas de la búsqueda anterior
+						//Removemos las respuestas de la búsqueda anterior						
+						DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+						dtm.setRowCount(0);
+						table.setModel(dtm);
+						//Ahora si ya colocamos los resultados en nuestra tabla
+						DefaultTableModel modelo=new DefaultTableModel();
+						table.setModel(modelo);
+						modelo.addColumn("Fichero");
+						String[] Datos = new String[1];
+						table.setModel(modelo);
+						for(String s:results){
+							//JOptionPane.showMessageDialog(null, s);
+							Datos[0]=s;
+							modelo.addRow(Datos);							
+						}
+						table.setModel(modelo);
 					}
+					
 				}
 			}
 		});
 		
 		table = new JTable();
+		table.addMouseListener(new java.awt.event.MouseAdapter() {
+		    @Override
+		    public void mouseClicked(java.awt.event.MouseEvent evt) {
+		        int row = table.rowAtPoint(evt.getPoint());
+		        int col = table.columnAtPoint(evt.getPoint());
+		        String path=(String) table.getValueAt(row, col);
+		        
+		        //text file, should be opening in default text editor
+		        File file = new File(path);
+		        
+		        //first check if Desktop is supported by Platform or not
+		        if(!Desktop.isDesktopSupported()){
+		            System.out.println("Desktop is not supported");
+		            return;
+		        }
+		        
+		        Desktop desktop = Desktop.getDesktop();
+		        if(file.exists()) {
+		        	try {
+						desktop.open(file);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						JOptionPane.showMessageDialog(null, "Lo sentmos no hemos encontrado el archivo");
+					}
+		        }else {
+		        		JOptionPane.showMessageDialog(null,"No hemos podido encontrar el archivo");
+		        }
+					
+		    }
+		});
 		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addGap(20)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addComponent(table, GroupLayout.PREFERRED_SIZE, 383, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(textField_1, GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
-								.addGap(18)
-								.addComponent(btnBuscar)
-								.addGap(25))
-							.addGroup(gl_panel_1.createSequentialGroup()
-								.addComponent(lblIntroduceLaPalabra)
-								.addContainerGap(212, Short.MAX_VALUE)))))
+						.addComponent(table, GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
+						.addGroup(Alignment.TRAILING, gl_panel_1.createSequentialGroup()
+							.addComponent(textField_1, GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
+							.addGap(18)
+							.addComponent(btnBuscar))
+						.addComponent(lblIntroduceLaPalabra))
+					.addContainerGap())
 		);
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.LEADING)

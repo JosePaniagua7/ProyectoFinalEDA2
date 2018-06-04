@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import Indexers.Indexer;
 import Parser.IParser;
@@ -38,7 +39,15 @@ public class IndexerTest {
 		//populateArrays();
 		
 		//Creamos nuestro mock, probaremos con una supuesta clase de lector de docx		
-		//IReader readerMock=mock(WORDXReader.class);
+		IReader readerMock=Mockito.mock(WORDXReader.class);
+		Mockito.when(readerMock.readFile("C:\\Users\\Jose Paniagua\\Desktop\\ToIndexFiles\\doc1.docx")).thenReturn(doc1);
+		
+		IReader readerMock1=Mockito.mock(WORDXReader.class);
+		Mockito.when(readerMock.readFile("C:\\Users\\Jose Paniagua\\Desktop\\ToIndexFiles\\doc1.docx")).thenReturn(doc2);
+		
+		IReader readerMock2=Mockito.mock(WORDXReader.class);
+		Mockito.when(readerMock.readFile("C:\\Users\\Jose Paniagua\\Desktop\\ToIndexFiles\\doc1.docx")).thenReturn(doc3);
+		
 		IReader reader=new WORDXReader();
 		//Instanciamos un parser 
 		IParser parser=new Parser(); 

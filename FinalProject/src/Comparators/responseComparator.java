@@ -11,10 +11,10 @@ public class responseComparator implements Comparator{
 		// TODO Auto-generated method stub
 		searchResponse first=(searchResponse) arg0;
 		searchResponse second=(searchResponse) arg1;
-		if(first.getTfidf()>=second.getTfidf()){
-			return 1;
-		}else if(first.getTfidf()<second.getTfidf()){
+		if(first.getTfidf()>=second.getTfidf()){			
 			return -1;
+		}else if(first.getTfidf()<second.getTfidf()){
+			return 1;
 		}else{
 			return 0;
 		}
